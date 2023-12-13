@@ -25,6 +25,12 @@ public class BallController : MonoBehaviour
         {
             Destroy(collision.gameObject);
         }
+        
+        if (collision.gameObject.CompareTag("DangerZone"))
+        {
+            GameManager.instance.GameOver();
+            Destroy(gameObject);
+        }
         if (collision.gameObject.CompareTag("Player"))
         {
             Vector2 direcaoJogador = collision.gameObject.GetComponent<Rigidbody2D>().velocity;

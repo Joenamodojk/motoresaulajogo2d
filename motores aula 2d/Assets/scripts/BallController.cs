@@ -15,7 +15,8 @@ public class BallController : MonoBehaviour
     void Start()
     {
         TryGetComponent(out rb);
-        direcao = Random.insideUnitCircle;
+        direcao = Random.insideUnitCircle.normalized;
+        direcao = new Vector2(direcao.x, 1).normalized;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -24,6 +25,12 @@ public class BallController : MonoBehaviour
         if (collision.gameObject.CompareTag("Bloco"))
         {
             Destroy(collision.gameObject);
+        }
+        
+        
+        if (collision.gameObject.CompareTag("RefB"))
+        {
+           collision.gameObject.GetComponent<BlocoRefor>().TomouHit();
         }
         
         if (collision.gameObject.CompareTag("DangerZone"))
@@ -36,7 +43,20 @@ public class BallController : MonoBehaviour
             Vector2 direcaoJogador = collision.gameObject.GetComponent<Rigidbody2D>().velocity;
             direcao = direcao + direcaoJogador;
         }
-        direcao = Vector2.Reflect(direcao, collision.contacts[0].normal);
+
+        if (collision.contacts.Length == 1)
+        {
+            direcao = Vector2.Reflect(direcao, collision.contacts[0].normal);
+        }
+        else
+        {
+            Vector2 normalMedia = Vector2.zero;
+            foreach (var ponto in collision.contacts)
+            {
+                direcao = (normalMedia + ponto.normal) / 2;
+            }
+        }
+        
     }
 
     // Update is called once per frame
